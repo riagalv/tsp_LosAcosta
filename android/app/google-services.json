@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "384230621775",
-    "project_id": "alertacan-81248",
-    "storage_bucket": "alertacan-81248.firebasestorage.app"
+    "project_number": "125781436437",
+    "project_id": "alertacanbd",
+    "storage_bucket": "alertacanbd.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:384230621775:android:f450414bc8245cab23203a",
+        "mobilesdk_app_id": "1:125781436437:android:1838ba949a1814f558061c",
         "android_client_info": {
-          "package_name": "com.company.alertacan"
+          "package_name": "com.example.alertacan"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD-G_GWKLrOgQThTCEixid5xodownY_tVs"
+          "current_key": "AIzaSyBQ0WdsoiLD07BHk7k1SkkypJeKyBxzUX8"
         }
       ],
       "services": {
