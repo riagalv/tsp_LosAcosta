@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
+import 'views/directorio_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,15 +63,43 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: const Color(0xFFE8F0F1),
+        elevation: 1,
+        shadowColor: Colors.black26,
       ),
-      body: const Center(
-        child: Text(
-          'Presiona el botón para crear una alerta',
-          style: TextStyle(fontSize: 16),
-        ),
+      body: Stack(
+        children: [
+          const Center(
+            child: Text(
+              'Presiona el botón para crear una alerta',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+
+          // Botón circular: Directorio de Emergencia (esquina inferior izquierda)
+          Positioned(
+            left: 40,
+            bottom: 80,
+            child: FloatingActionButton(
+              heroTag: 'directorio',
+              backgroundColor: Colors.grey.shade300,
+              shape: const CircleBorder(),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DirectorioScreen(),
+                  ),
+                );
+              },
+              tooltip: 'Directorio de Emergencia',
+              child: Icon(Icons.menu_book, color: Colors.grey.shade800),
+            ),
+          ),
+        ],
       ),
 
       // BOTON QUE GUARDA EN FIRESTORE
