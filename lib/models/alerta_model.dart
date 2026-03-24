@@ -6,6 +6,9 @@ class Alerta {
   final String riesgo;
   final String estado;
   final Timestamp fecha;
+  final double latitud;
+  final double longitud;
+  final String emisor;
 
   Alerta({
     required this.id,
@@ -13,6 +16,9 @@ class Alerta {
     required this.riesgo,
     required this.estado,
     required this.fecha,
+    required this.latitud,
+    required this.longitud,
+    required this.emisor,
   });
 
   factory Alerta.fromFirestore(DocumentSnapshot doc) {
@@ -24,6 +30,9 @@ class Alerta {
       riesgo: data['riesgo'] ?? '',
       estado: data['estado'] ?? '',
       fecha: data['fecha'] ?? Timestamp.now(),
+      latitud: (data['latitud'] ?? 0.0).toDouble(),
+      longitud: (data['longitud'] ?? 0.0).toDouble(),
+      emisor: data['emisor'] ?? 'Anónimo',
     );
   }
 }

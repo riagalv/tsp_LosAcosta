@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'mapa_expandido_screen.dart';
 
 class AlertaConfirmacionScreen extends StatefulWidget {
   final String nivelRiesgo;
@@ -85,6 +88,9 @@ class _AlertaConfirmacionScreenState extends State<AlertaConfirmacionScreen>
               '${posicion.latitude.toStringAsFixed(4)}, ${posicion.longitude.toStringAsFixed(4)}';
           _cargando = false;
         });
+
+        // Guardar alerta en Firestore automáticamente
+        _guardarAlertaEnFirestore(posicion);
       }
     } catch (e) {
       if (mounted) {
@@ -93,6 +99,27 @@ class _AlertaConfirmacionScreenState extends State<AlertaConfirmacionScreen>
           _cargando = false;
         });
       }
+    }
+  }
+
+  Future<void> _guardarAlertaEnFirestore(Position posicion) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final nombre = prefs.getString('nombre') ?? '';
+      final apellido = prefs.getString('apellido') ?? '';
+      final emisor = '$nombre $apellido'.trim();
+
+      await FirebaseFirestore.instance.collection('alertas').add({
+        'latitud': posicion.latitude,
+        'longitud': posicion.longitude,
+        'direccion': '${posicion.latitude.toStringAsFixed(4)}, ${posicion.longitude.toStringAsFixed(4)}',
+        'riesgo': widget.nivelRiesgo,
+        'estado': 'activa',
+        'emisor': emisor.isNotEmpty ? emisor : 'Anónimo',
+        'fecha': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error guardando alerta: $e');
     }
   }
 
@@ -179,8 +206,22 @@ class _AlertaConfirmacionScreenState extends State<AlertaConfirmacionScreen>
 
               const SizedBox(height: 28),
 
-              // Mapa real con Google Maps
-              Container(
+              // Mapa real con Google Maps (tappable para expandir)
+              GestureDetector(
+                onTap: () {
+                  if (_posicion != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MapaExpandidoScreen(
+                          latitud: _posicion!.latitude,
+                          longitud: _posicion!.longitude,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Container(
                 height: 180,
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -300,7 +341,8 @@ class _AlertaConfirmacionScreenState extends State<AlertaConfirmacionScreen>
                               ),
                             ),
                 ),
-              ),
+              ), // Container end
+              ), // GestureDetector end
 
               const SizedBox(height: 16),
 

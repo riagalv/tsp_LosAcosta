@@ -1,18 +1,42 @@
 import 'package:alertacan/views/historial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'views/directorio_screen.dart';
 import 'views/alerta_confirmacion_screen.dart';
+import 'views/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+
+  final prefs = await SharedPreferences.getInstance();
+  final logueado = prefs.getBool('logueado') ?? false;
+
+  runApp(MyApp(logueado: logueado));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final bool logueado;
+  const MyApp({super.key, required this.logueado});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late bool _logueado;
+
+  @override
+  void initState() {
+    super.initState();
+    _logueado = widget.logueado;
+  }
+
+  void _onLoginExitoso() {
+    setState(() => _logueado = true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +46,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         fontFamily: 'Roboto',
       ),
-      home: const MyHomePage(),
+      home: _logueado
+          ? const MyHomePage()
+          : LoginScreen(onLoginExitoso: _onLoginExitoso),
       debugShowCheckedModeBanner: false,
     );
   }
