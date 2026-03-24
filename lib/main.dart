@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'views/directorio_screen.dart';
+import 'views/alerta_confirmacion_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,17 +83,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Future.delayed(const Duration(seconds: 2), () {
       if (_presionando && mounted) {
         setState(() => _presionando = false);
-        // Por ahora no envía nada
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _nivelSeleccionado >= 0
-                  ? '¡Alerta ${_niveles[_nivelSeleccionado]['label']} activada!'
-                  : 'Selecciona un nivel de riesgo primero',
+
+        if (_nivelSeleccionado < 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Selecciona un nivel de riesgo primero'),
+              backgroundColor: Colors.grey,
             ),
-            backgroundColor: _nivelSeleccionado >= 0
-                ? const Color(0xFFE84C3D)
-                : Colors.grey,
+          );
+          return;
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AlertaConfirmacionScreen(
+              nivelRiesgo: _niveles[_nivelSeleccionado]['label'] as String,
+            ),
           ),
         );
       }
