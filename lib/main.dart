@@ -1,3 +1,4 @@
+import 'package:alertacan/views/historial_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -427,7 +428,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 backgroundColor: Colors.grey.shade300,
                 shape: const CircleBorder(),
                 onPressed: () {
-                  // Por ahora no hace nada
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HistorialScreen()),
+                  );
                 },
                 tooltip: 'Historial',
                 child: Icon(Icons.history, color: Colors.grey.shade800),
