@@ -7,7 +7,7 @@ class HistorialController {
   Stream<List<AlertaModel>> obtenerAlertas() {
     return _db
         .collection('alertas')
-        .orderBy('fecha', descending: true) // Más recientes primero
+        .orderBy('fecha', descending: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
