@@ -14,20 +14,30 @@ class MapaController {
 
   // Callbacks para actualizar la vista
   Function? onMapaActualizado;
-  Function? onError;
+  Function(String)? onError;
+  Function(AlertaModel)? onMostrarDetalle;
 
   // Obtener ubicación actual
   Future<void> obtenerUbicacionActual() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
+      if (!serviceEnabled) {
+        if (onError != null) onError!('Servicios de ubicación deshabilitados');
+        return;
+      }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
+        if (permission == LocationPermission.denied) {
+          if (onError != null) onError!('Permiso de ubicación denegado');
+          return;
+        }
       }
-      if (permission == LocationPermission.deniedForever) return;
+      if (permission == LocationPermission.deniedForever) {
+        if (onError != null) onError!('Permiso denegado permanentemente');
+        return;
+      }
 
       final posicion = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -38,30 +48,32 @@ class MapaController {
 
       if (onMapaActualizado != null) onMapaActualizado!();
     } catch (e) {
-      if (onError != null) onError!();
+      if (onError != null) onError!('Error al obtener ubicación: $e');
     }
   }
 
   // Cargar alertas en tiempo real
   void cargarAlertas() {
     _firestore.collection('alertas').snapshots().listen((snapshot) async {
-      final alertas = snapshot.docs
-          .map((doc) => Alerta.fromFirestore(doc))
-          .toList();
-
       final nuevosMarkers = <Marker>{};
 
-      for (final alerta in alertas) {
+      for (final doc in snapshot.docs) {
+        // Cambia de Alerta.fromFirestore a AlertaModel.fromFirestore
+        final alerta = AlertaModel.fromFirestore(doc); // ✅ Ahora funciona
+        //final alerta = AlertaModel.fromFirestore(doc);
+
         if (alerta.latitud == 0.0 && alerta.longitud == 0.0) continue;
 
         final icono = await _crearIconoPersonalizado(alerta.riesgo);
 
         nuevosMarkers.add(
           Marker(
-            markerId: MarkerId(alerta.id),
+            markerId: MarkerId(alerta.id!),
             position: LatLng(alerta.latitud, alerta.longitud),
             icon: icono,
-            onTap: () {}, // El onTap se manejará desde la vista
+            onTap: () {
+              if (onMostrarDetalle != null) onMostrarDetalle!(alerta);
+            },
           ),
         );
       }
@@ -71,7 +83,7 @@ class MapaController {
     });
   }
 
-  // Crear icono personalizado (lógica compleja)
+  // Crear icono personalizado
   Future<BitmapDescriptor> _crearIconoPersonalizado(String riesgo) async {
     final color = _colorParaRiesgo(riesgo);
     final size = 120.0;
@@ -97,7 +109,7 @@ class MapaController {
     final circlePaint = Paint()..color = color;
     canvas.drawCircle(Offset(size / 2, size / 2), size / 2 - 8, circlePaint);
 
-    // Icono de advertencia
+    // Triángulo de advertencia
     final iconPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
@@ -111,6 +123,7 @@ class MapaController {
     path.close();
     canvas.drawPath(path, iconPaint);
 
+    // Signo de exclamación
     final exclamationPaint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
@@ -144,28 +157,9 @@ class MapaController {
     }
   }
 
-  // Centrar mapa en ubicación actual
-  void centrarEnMiUbicacion() {
-    if (miPosicion != null && mapController != null) {
-      mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(
-          LatLng(miPosicion!.latitude, miPosicion!.longitude),
-          15.5,
-        ),
-      );
-    }
-  }
+  // Métodos públicos para la vista
+  Color getColorPorRiesgo(String riesgo) => _colorParaRiesgo(riesgo);
 
-  // Mover cámara a una ubicación específica
-  void moverCamara(double latitud, double longitud, double zoom) {
-    if (mapController != null) {
-      mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(LatLng(latitud, longitud), zoom),
-      );
-    }
-  }
-
-  // Obtener etiqueta de riesgo
   String getEtiquetaRiesgo(String riesgo) {
     switch (riesgo.toUpperCase()) {
       case 'ALTO':
@@ -179,13 +173,31 @@ class MapaController {
     }
   }
 
-  // Obtener tiempo transcurrido
   String getTiempoTranscurrido(Timestamp fecha) {
     final diff = DateTime.now().difference(fecha.toDate());
     if (diff.inSeconds < 60) return 'Hace ${diff.inSeconds} seg';
     if (diff.inMinutes < 60) return 'Hace ${diff.inMinutes} min';
     if (diff.inHours < 24) return 'Hace ${diff.inHours} h';
     return 'Hace ${diff.inDays} días';
+  }
+
+  void centrarEnMiUbicacion() {
+    if (miPosicion != null && mapController != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(miPosicion!.latitude, miPosicion!.longitude),
+          15.5,
+        ),
+      );
+    }
+  }
+
+  void moverCamara(double latitud, double longitud, double zoom) {
+    if (mapController != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(LatLng(latitud, longitud), zoom),
+      );
+    }
   }
 
   void dispose() {

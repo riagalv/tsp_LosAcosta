@@ -1,8 +1,8 @@
-import 'package:alertacan/models/alertaModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/alerta_model.dart';
 import '../services/ubicacion_service.dart';
 
 class AlertaConfirmacionController {
