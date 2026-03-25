@@ -54,14 +54,14 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
   }
 
   void _cargarAlertas() {
-    FirebaseFirestore.instance
-        .collection('alertas')
-        .snapshots()
-        .listen((snapshot) async {
+    FirebaseFirestore.instance.collection('alertas').snapshots().listen((
+      snapshot,
+    ) async {
       if (!mounted) return;
 
-      final alertas =
-          snapshot.docs.map((doc) => Alerta.fromFirestore(doc)).toList();
+      final alertas = snapshot.docs
+          .map((doc) => Alerta.fromFirestore(doc))
+          .toList();
 
       final Set<Marker> nuevosMarkers = {};
 
@@ -70,12 +70,14 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
 
         final icono = await _crearIconoPersonalizado(alerta.riesgo);
 
-        nuevosMarkers.add(Marker(
-          markerId: MarkerId(alerta.id),
-          position: LatLng(alerta.latitud, alerta.longitud),
-          icon: icono,
-          onTap: () => _mostrarDetalleIncidente(alerta),
-        ));
+        nuevosMarkers.add(
+          Marker(
+            markerId: MarkerId(alerta.id),
+            position: LatLng(alerta.latitud, alerta.longitud),
+            icon: icono,
+            onTap: () => _mostrarDetalleIncidente(alerta),
+          ),
+        );
       }
 
       if (mounted) {
@@ -95,7 +97,11 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
     final shadowPaint = Paint()
       ..color = Colors.black.withValues(alpha: 0.2)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-    canvas.drawCircle(Offset(size / 2, size / 2 + 2), size / 2 - 6, shadowPaint);
+    canvas.drawCircle(
+      Offset(size / 2, size / 2 + 2),
+      size / 2 - 6,
+      shadowPaint,
+    );
 
     // Borde blanco
     final borderPaint = Paint()..color = Colors.white;
@@ -142,7 +148,6 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
 
     return BitmapDescriptor.bytes(bytes, width: 44, height: 44);
   }
-
 
   Color _colorParaRiesgo(String riesgo) {
     switch (riesgo.toUpperCase()) {
@@ -245,8 +250,11 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                       // Ubicación
                       Row(
                         children: [
-                          Icon(Icons.location_on,
-                              size: 18, color: Colors.grey.shade500),
+                          Icon(
+                            Icons.location_on,
+                            size: 18,
+                            color: Colors.grey.shade500,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
@@ -336,14 +344,16 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(14),
-                                border:
-                                    Border.all(color: Colors.grey.shade200),
+                                border: Border.all(color: Colors.grey.shade200),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.access_time,
-                                      size: 22, color: Colors.orange.shade300),
+                                  Icon(
+                                    Icons.access_time,
+                                    size: 22,
+                                    color: Colors.orange.shade300,
+                                  ),
                                   const SizedBox(height: 6),
                                   Text(
                                     'HORA',
@@ -377,14 +387,16 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(14),
-                                border:
-                                    Border.all(color: Colors.grey.shade200),
+                                border: Border.all(color: Colors.grey.shade200),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.person,
-                                      size: 22, color: Colors.brown.shade300),
+                                  Icon(
+                                    Icons.person,
+                                    size: 22,
+                                    color: Colors.brown.shade300,
+                                  ),
                                   const SizedBox(height: 6),
                                   Text(
                                     'EMISOR',
@@ -484,8 +496,11 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                                 ],
                               ),
                             ),
-                            Icon(Icons.groups,
-                                size: 28, color: Colors.grey.shade400),
+                            Icon(
+                              Icons.groups,
+                              size: 28,
+                              color: Colors.grey.shade400,
+                            ),
                           ],
                         ),
                       ),
@@ -601,8 +616,11 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                   // Botón de regreso
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back,
-                        color: Color(0xFF2C2C2C), size: 24),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Color(0xFF2C2C2C),
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Text(
@@ -619,7 +637,9 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                   // GPS Activo indicator
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(20),
@@ -676,8 +696,7 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
                 children: [
                   _buildLeyendaItem(const Color(0xFFE84C3D), 'ALTO RIESGO'),
                   const SizedBox(height: 6),
-                  _buildLeyendaItem(
-                      const Color(0xFFF48C42), 'MEDIO RIESGO'),
+                  _buildLeyendaItem(const Color(0xFFF48C42), 'MEDIO RIESGO'),
                   const SizedBox(height: 6),
                   _buildLeyendaItem(const Color(0xFFF4C542), 'BAJO RIESGO'),
                 ],
@@ -765,10 +784,7 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
         Container(
           width: 10,
           height: 10,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 8),
         Text(

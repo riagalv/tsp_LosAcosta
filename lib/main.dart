@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AlertaConfirmacionScreen(
+            builder: (_) => AlertaConfirmacionView(
               nivelRiesgo: _niveles[_nivelSeleccionado]['label'] as String,
             ),
           ),
