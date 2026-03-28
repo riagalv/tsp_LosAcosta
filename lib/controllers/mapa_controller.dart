@@ -4,9 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/alerta_model.dart';
+import '../services/ubicacion_service.dart';
 
 class MapaController {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore;
+  final UbicacionService _ubicacionService;
+
+  MapaController({
+    FirebaseFirestore? firestore,
+    UbicacionService? ubicacionService,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _ubicacionService = ubicacionService ?? UbicacionService();
+
   GoogleMapController? mapController;
   Position? miPosicion;
   bool gpsActivo = false;
@@ -20,29 +29,7 @@ class MapaController {
   // Obtener ubicación actual
   Future<void> obtenerUbicacionActual() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (onError != null) onError!('Servicios de ubicación deshabilitados');
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          if (onError != null) onError!('Permiso de ubicación denegado');
-          return;
-        }
-      }
-      if (permission == LocationPermission.deniedForever) {
-        if (onError != null) onError!('Permiso denegado permanentemente');
-        return;
-      }
-
-      final posicion = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
+      final posicion = await _ubicacionService.obtenerUbicacionActual();
       miPosicion = posicion;
       gpsActivo = true;
 

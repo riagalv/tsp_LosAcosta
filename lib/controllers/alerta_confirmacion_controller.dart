@@ -7,8 +7,9 @@ import '../models/alerta_model.dart';
 import '../services/ubicacion_service.dart';
 
 class AlertaConfirmacionController {
-  final UbicacionService _ubicacionService = UbicacionService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UbicacionService _ubicacionService;
+  final FirebaseFirestore _firestore;
+  final SharedPreferences? _sharedPreferences;
 
   // Propiedad para almacenar el nivel de riesgo
   final String nivelRiesgo;
@@ -22,7 +23,14 @@ class AlertaConfirmacionController {
   Function? onError;
 
   // Recibe nivelRiesgo en el constructor
-  AlertaConfirmacionController({required this.nivelRiesgo});
+  AlertaConfirmacionController({
+    required this.nivelRiesgo,
+    UbicacionService? ubicacionService,
+    FirebaseFirestore? firestore,
+    SharedPreferences? sharedPreferences,
+  })  : _ubicacionService = ubicacionService ?? UbicacionService(),
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _sharedPreferences = sharedPreferences;
 
   Future<void> obtenerUbicacion() async {
     try {
@@ -119,7 +127,7 @@ class AlertaConfirmacionController {
   // Guardar alerta con dirección legible
   Future<void> guardarAlerta(Position posicion, String direccionLegible) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = _sharedPreferences ?? await SharedPreferences.getInstance();
       final nombre = prefs.getString('nombre') ?? '';
       final apellido = prefs.getString('apellido') ?? '';
       final emisor = '$nombre $apellido'.trim();

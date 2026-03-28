@@ -2,8 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/contacto_model.dart';
 
 class DirectorioController {
-  final CollectionReference _coleccion =
-      FirebaseFirestore.instance.collection('directorio');
+  final FirebaseFirestore _firestore;
+  late final CollectionReference<Map<String, dynamic>> _coleccion;
+
+  DirectorioController({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance {
+    _coleccion = _firestore.collection('directorio');
+  }
 
   /// Obtiene todos los contactos en tiempo real.
   Stream<List<Contacto>> obtenerContactos() {
@@ -71,7 +76,7 @@ class DirectorioController {
       ),
     ];
 
-    final batch = FirebaseFirestore.instance.batch();
+    final batch = _firestore.batch();
     for (final contacto in contactos) {
       batch.set(_coleccion.doc(), contacto.toMap());
     }

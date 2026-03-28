@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/alerta_model.dart';
 
 class HistorialController {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore _db;
+
+  HistorialController({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance;
 
   Stream<List<AlertaModel>> obtenerAlertas() {
     return _db
