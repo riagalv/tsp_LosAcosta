@@ -6,10 +6,12 @@ import 'firebase_options.dart';
 import 'views/directorio_screen.dart';
 import 'views/alerta_confirmacion_screen.dart';
 import 'views/login_screen.dart';
+import 'services/onesignal_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await OneSignalService.inicializar();
 
   final prefs = await SharedPreferences.getInstance();
   final logueado = prefs.getBool('logueado') ?? false;
@@ -96,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _auraAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _auraController, curve: Curves.easeInOut),
     );
+    OneSignalService.registrarDispositivo();
   }
 
   @override

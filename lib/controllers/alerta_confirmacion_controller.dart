@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/alerta_model.dart';
 import '../services/ubicacion_service.dart';
+import '../services/onesignal_service.dart';
 
 class AlertaConfirmacionController {
   final UbicacionService _ubicacionService;
@@ -48,6 +49,8 @@ class AlertaConfirmacionController {
       if (onUbicacionActualizada != null) {
         onUbicacionActualizada!();
       }
+
+      await OneSignalService.actualizarUbicacion(posicion.latitude, posicion.longitude);
 
       // Guardar alerta con dirección legible
       await guardarAlerta(posicion, direccionLegible);
@@ -143,6 +146,15 @@ class AlertaConfirmacionController {
 
       await _firestore.collection('alertas').add(alerta.toMap());
       debugPrint('Alerta guardada con dirección: $direccionLegible');
+
+      final oneSignalService = OneSignalService(firestore: _firestore);
+      await oneSignalService.notificarUsuariosCercanos(
+        latitudAlerta: posicion.latitude,
+        longitudAlerta: posicion.longitude,
+        riesgo: nivelRiesgo,
+        direccion: direccionLegible,
+        emisor: emisor.isNotEmpty ? emisor : 'Anónimo',
+      );
     } catch (e) {
       debugPrint('Error guardando alerta: $e');
       rethrow;
