@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/alerta_model.dart';
+import '../services/notification_service.dart';
 
 class MapaController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final NotificationService _notificationService = NotificationService();
   GoogleMapController? mapController;
   Position? miPosicion;
   bool gpsActivo = false;
@@ -46,6 +48,11 @@ class MapaController {
       miPosicion = posicion;
       gpsActivo = true;
 
+      await _notificationService.actualizarUbicacionUsuario(
+        latitud: posicion.latitude,
+        longitud: posicion.longitude,
+      );
+
       if (onMapaActualizado != null) onMapaActualizado!();
     } catch (e) {
       if (onError != null) onError!('Error al obtener ubicación: $e');
@@ -59,7 +66,7 @@ class MapaController {
 
       for (final doc in snapshot.docs) {
         // Cambia de Alerta.fromFirestore a AlertaModel.fromFirestore
-        final alerta = AlertaModel.fromFirestore(doc); // ✅ Ahora funciona
+        final alerta = AlertaModel.fromFirestore(doc);
         //final alerta = AlertaModel.fromFirestore(doc);
 
         if (alerta.latitud == 0.0 && alerta.longitud == 0.0) continue;

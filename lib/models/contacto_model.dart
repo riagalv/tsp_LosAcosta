@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Contacto {
+class ContactoModel {
   final String id;
   final String nombre;
   final String categoria;
@@ -9,7 +9,7 @@ class Contacto {
   final String funciones;
   final String? direccion;
 
-  Contacto({
+  ContactoModel({
     required this.id,
     required this.nombre,
     required this.categoria,
@@ -19,9 +19,9 @@ class Contacto {
     this.direccion,
   });
 
-  factory Contacto.fromFirestore(DocumentSnapshot doc) {
+  factory ContactoModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return Contacto(
+    return ContactoModel(
       id: doc.id,
       nombre: data['nombre'] ?? '',
       categoria: data['categoria'] ?? '',

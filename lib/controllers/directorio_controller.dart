@@ -6,9 +6,9 @@ class DirectorioController {
       FirebaseFirestore.instance.collection('directorio');
 
   /// Obtiene todos los contactos en tiempo real.
-  Stream<List<Contacto>> obtenerContactos() {
+  Stream<List<ContactoModel>> obtenerContactos() {
     return _coleccion.orderBy('categoria').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Contacto.fromFirestore(doc)).toList();
+      return snapshot.docs.map((doc) => ContactoModel.fromFirestore(doc)).toList();
     });
   }
 
@@ -18,7 +18,7 @@ class DirectorioController {
     if (snapshot.docs.isNotEmpty) return;
 
     final contactos = [
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Policía Municipal',
         categoria: 'Seguridad',
@@ -27,7 +27,7 @@ class DirectorioController {
         funciones: 'Seguridad pública, patrullaje, atención a denuncias ciudadanas.',
         direccion: 'Presidencia Municipal',
       ),
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Guardia Nacional',
         categoria: 'Seguridad',
@@ -35,7 +35,7 @@ class DirectorioController {
         horario: '24 horas',
         funciones: 'Seguridad nacional, apoyo en emergencias, vigilancia carretera.',
       ),
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Cruz Roja',
         categoria: 'Salud',
@@ -43,7 +43,7 @@ class DirectorioController {
         horario: '24 horas',
         funciones: 'Atención prehospitalaria, traslado de emergencia, primeros auxilios.',
       ),
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Hospital General',
         categoria: 'Salud',
@@ -52,7 +52,7 @@ class DirectorioController {
         funciones: 'Atención médica general, urgencias, hospitalización.',
         direccion: 'Blvd. Principal #200',
       ),
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Bomberos',
         categoria: 'Protección Civil',
@@ -60,7 +60,7 @@ class DirectorioController {
         horario: '24 horas',
         funciones: 'Combate de incendios, rescate, atención a fugas de gas.',
       ),
-      Contacto(
+      ContactoModel(
         id: '',
         nombre: 'Protección Civil Municipal',
         categoria: 'Protección Civil',

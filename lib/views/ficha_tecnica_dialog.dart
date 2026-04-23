@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/contacto_model.dart';
 
 class FichaTecnicaDialog extends StatelessWidget {
-  final Contacto contacto;
+  final ContactoModel contacto;
 
   const FichaTecnicaDialog({super.key, required this.contacto});
 
   /// Muestra la ficha técnica como un BottomSheet.
-  static void mostrar(BuildContext context, Contacto contacto) {
+  static void mostrar(BuildContext context, ContactoModel contacto) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -68,7 +68,11 @@ class FichaTecnicaDialog extends StatelessWidget {
           CircleAvatar(
             radius: 32,
             backgroundColor: color.withValues(alpha: 0.15),
-            child: Icon(_iconoCategoria(contacto.categoria), size: 32, color: color),
+            child: Icon(
+              _iconoCategoria(contacto.categoria),
+              size: 32,
+              color: color,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -181,10 +185,7 @@ class _FilaInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                contenido,
-                style: const TextStyle(fontSize: 15),
-              ),
+              Text(contenido, style: const TextStyle(fontSize: 15)),
             ],
           ),
         ),

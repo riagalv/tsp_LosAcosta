@@ -62,7 +62,7 @@ class CategoriaChip extends StatelessWidget {
 
 // Tarjeta de contacto reutilizable
 class ContactoTarjeta extends StatelessWidget {
-  final Contacto contacto;
+  final ContactoModel contacto;
 
   const ContactoTarjeta({super.key, required this.contacto});
 
