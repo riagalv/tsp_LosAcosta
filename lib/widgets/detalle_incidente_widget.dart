@@ -295,9 +295,9 @@ class DetalleIncidenteWidget extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-                const Text(
-                  'X Vecinos Notificados',
-                  style: TextStyle(
+                Text(
+                  '${alerta.personasAlertadas} Vecinos Notificados',
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF1C2833),

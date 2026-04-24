@@ -6,10 +6,33 @@ import 'firebase_options.dart';
 import 'views/directorio_screen.dart';
 import 'views/alerta_confirmacion_screen.dart';
 import 'views/login_screen.dart';
+import 'services/onesignal_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<void> _limpiarAlertasAntiguas() async {
+  try {
+    final haceUnaSemana = DateTime.now().subtract(const Duration(days: 7));
+    final snapshot = await FirebaseFirestore.instance
+        .collection('alertas')
+        .where('fecha', isLessThan: Timestamp.fromDate(haceUnaSemana))
+        .get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+    debugPrint('Se eliminaron ${snapshot.docs.length} alertas antiguas.');
+  } catch (e) {
+    debugPrint('Error limpiando alertas antiguas: $e');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await OneSignalService.inicializar();
+
+  // Limpiar alertas que tengan más de una semana de antigüedad
+  _limpiarAlertasAntiguas();
 
   final prefs = await SharedPreferences.getInstance();
   final logueado = prefs.getBool('logueado') ?? false;
@@ -96,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _auraAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _auraController, curve: Curves.easeInOut),
     );
+    OneSignalService.registrarDispositivo();
   }
 
   @override

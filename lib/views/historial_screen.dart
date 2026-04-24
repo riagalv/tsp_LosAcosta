@@ -834,6 +834,12 @@ class HistorialScreen extends StatelessWidget {
                         contenido:
                             '${alerta.latitud.toStringAsFixed(4)}, ${alerta.longitud.toStringAsFixed(4)}',
                       ),
+                      const SizedBox(height: 16),
+                      _buildDetalleFila(
+                        icon: Icons.notifications_active_outlined,
+                        titulo: 'VECINOS ALERTADOS',
+                        contenido: '${alerta.personasAlertadas} personas',
+                      ),
                       const SizedBox(height: 24),
                       // Botón cerrar
                       SizedBox(
