@@ -6,6 +6,8 @@ import 'firebase_options.dart';
 import 'views/directorio_screen.dart';
 import 'views/alerta_confirmacion_screen.dart';
 import 'views/login_screen.dart';
+import 'views/registrar_punto_seguro_screen.dart';
+import 'views/mapa_expandido_screen.dart';
 import 'services/onesignal_service.dart';
 
 void main() async {
@@ -429,44 +431,73 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ),
             ),
 
-            // Botón circular: Directorio de Emergencia (esquina inferior izquierda)
+            // Navbar flotante (Pill)
             Positioned(
-              left: 40,
+              left: 24,
+              right: 24,
               bottom: 24,
-              child: FloatingActionButton(
-                heroTag: 'directorio',
-                backgroundColor: Colors.grey.shade300,
-                shape: const CircleBorder(),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const DirectorioScreen()),
-                  );
-                },
-                tooltip: 'Directorio de Emergencia',
-                child: Icon(Icons.menu_book, color: Colors.grey.shade800),
-              ),
-            ),
-
-            // Botón circular: Historial (esquina inferior derecha)
-            Positioned(
-              right: 40,
-              bottom: 24,
-              child: FloatingActionButton(
-                heroTag: 'historial',
-                backgroundColor: Colors.grey.shade300,
-                shape: const CircleBorder(),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HistorialScreen()),
-                  );
-                },
-                tooltip: 'Historial',
-                child: Icon(Icons.history, color: Colors.grey.shade800),
+              child: Container(
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(36),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildNavItem(Icons.menu_book, 'Directorio', () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const DirectorioScreen()),
+                      );
+                    }),
+                    _buildNavItem(Icons.verified_user, 'Punto Seguro', () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RegistrarPuntoSeguroScreen()),
+                      );
+                    }),
+                    _buildNavItem(Icons.map_outlined, 'Mapa', () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MapaExpandidoScreen()),
+                      );
+                    }),
+                    _buildNavItem(Icons.history, 'Historial', () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => HistorialScreen()),
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String tooltip, VoidCallback onPressed) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Icon(icon, color: const Color(0xFF4A5568), size: 28),
+          ),
         ),
       ),
     );

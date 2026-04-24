@@ -30,8 +30,13 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
       _mostrarDetalleIncidente(alerta);
     };
 
+    _controller.onMostrarDetallePuntoSeguro = (data) {
+      _mostrarDetallePuntoSeguro(data);
+    };
+
     _controller.obtenerUbicacionActual();
     _controller.cargarAlertas();
+    _controller.cargarPuntosSeguros();
   }
 
   @override
@@ -57,6 +62,181 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
     );
   }
 
+  void _mostrarDetallePuntoSeguro(Map<String, dynamic> data) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.45,
+          minChildSize: 0.3,
+          maxChildSize: 0.6,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.verified_user, color: Colors.green.shade700, size: 32),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'PUNTO SEGURO',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.green.shade700,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                data['nombre'] ?? 'Sin nombre',
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF1C2833),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    _buildFilaInfoPuntoSeguro(Icons.category, 'TIPO', data['tipo'] ?? ''),
+                    const SizedBox(height: 16),
+                    _buildFilaInfoPuntoSeguro(Icons.location_on, 'DIRECCIÓN', data['direccion'] ?? ''),
+                    const SizedBox(height: 16),
+                    _buildFilaInfoPuntoSeguro(Icons.access_time, 'DISPONIBILIDAD', data['disponibilidad'] ?? ''),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        _buildChipInfo(Icons.videocam, 'VIGILANCIA\n24/7'),
+                        const SizedBox(width: 12),
+                        _buildChipInfo(Icons.phone_in_talk, 'BOTÓN DE\nPÁNICO'),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _controller.gpsActivo ? () {
+                          Navigator.pop(context);
+                          _controller.trazarRuta(data['latitud'], data['longitud']);
+                        } : null,
+                        icon: const Icon(Icons.navigation, color: Colors.white),
+                        label: Text(_controller.gpsActivo ? 'CÓMO LLEGAR' : 'GPS NO DISPONIBLE', style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1, color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD32F2F),
+                          disabledBackgroundColor: Colors.grey.shade400,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFilaInfoPuntoSeguro(IconData icon, String titulo, String contenido) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 20, color: Colors.grey.shade500),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                titulo,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.grey.shade500,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                contenido,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1C2833),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChipInfo(IconData icon, String text) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: Colors.black87),
+            const SizedBox(width: 8),
+            Text(
+              text,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.black87, height: 1.2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final centroInicial = widget.latitud != null && widget.longitud != null
@@ -73,12 +253,14 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
               zoom: 14.5,
             ),
             markers: _controller.markers,
+            polylines: _controller.polylines,
             myLocationEnabled: _controller.gpsActivo,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
             onMapCreated: (controller) {
               _controller.mapController = controller;
+              controller.setMapStyle('[{"elementType":"geometry","stylers":[{"color":"#f5f5f5"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#f5f5f5"}]},{"featureType":"administrative.land_parcel","elementType":"labels.text.fill","stylers":[{"color":"#bdbdbd"}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#eeeeee"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#e5e5e5"}]},{"featureType":"poi.park","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"road","elementType":"geometry","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#dadada"}]},{"featureType":"road.highway","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"color":"#e5e5e5"}]},{"featureType":"transit.station","elementType":"geometry","stylers":[{"color":"#eeeeee"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#c9c9c9"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]}]');
             },
           ),
           _buildTopBar(),
@@ -189,11 +371,40 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLegendItem(const Color(0xFFE84C3D), 'ALTO RIESGO'),
-            const SizedBox(height: 6),
-            _buildLegendItem(const Color(0xFFF48C42), 'MEDIO RIESGO'),
-            const SizedBox(height: 6),
-            _buildLegendItem(const Color(0xFFF4C542), 'BAJO RIESGO'),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _controller.mostrarAlertas = !_controller.mostrarAlertas;
+                  _controller.onMapaActualizado?.call();
+                });
+              },
+              child: Opacity(
+                opacity: _controller.mostrarAlertas ? 1.0 : 0.4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLegendItem(const Color(0xFFE84C3D), 'ALTO RIESGO'),
+                    const SizedBox(height: 6),
+                    _buildLegendItem(const Color(0xFFF48C42), 'MEDIO RIESGO'),
+                    const SizedBox(height: 6),
+                    _buildLegendItem(const Color(0xFFF4C542), 'BAJO RIESGO'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _controller.mostrarPuntosSeguros = !_controller.mostrarPuntosSeguros;
+                  _controller.onMapaActualizado?.call();
+                });
+              },
+              child: Opacity(
+                opacity: _controller.mostrarPuntosSeguros ? 1.0 : 0.4,
+                child: _buildLegendItem(Colors.green.shade600, 'PUNTO SEGURO'),
+              ),
+            ),
           ],
         ),
       ),
