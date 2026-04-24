@@ -9,6 +9,7 @@ class AlertaModel {
   final String estado;
   final String emisor;
   final DateTime? fecha;
+  final int personasAlertadas;
 
   AlertaModel({
     this.id,
@@ -19,6 +20,7 @@ class AlertaModel {
     required this.estado,
     required this.emisor,
     this.fecha,
+    this.personasAlertadas = 0,
   });
 
   // GUARDAR en Firestore (NO incluye id)
@@ -31,6 +33,7 @@ class AlertaModel {
       'estado': estado,
       'emisor': emisor,
       'fecha': fecha ?? FieldValue.serverTimestamp(),
+      'personasAlertadas': personasAlertadas,
     };
   }
 
@@ -47,6 +50,7 @@ class AlertaModel {
       estado: data['estado'] ?? '',
       emisor: data['emisor'] ?? 'Anónimo',
       fecha: data['fecha']?.toDate(),
+      personasAlertadas: data['personasAlertadas'] ?? 0,
     );
   }
 
@@ -61,6 +65,7 @@ class AlertaModel {
       estado: map['estado'] ?? '',
       emisor: map['emisor'] ?? 'Anónimo',
       fecha: map['fecha']?.toDate(),
+      personasAlertadas: map['personasAlertadas'] ?? 0,
     );
   }
 }

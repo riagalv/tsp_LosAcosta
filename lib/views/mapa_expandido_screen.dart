@@ -224,63 +224,30 @@ class _MapaExpandidoScreenState extends State<MapaExpandidoScreen> {
 
   Widget _buildBottomBar() {
     return Positioned(
-      left: 16,
       right: 16,
       bottom: MediaQuery.of(context).padding.bottom + 24,
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+      child: GestureDetector(
+        onTap: () => _controller.centrarEnMiUbicacion(),
+        child: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: Colors.grey.shade400),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Buscar zona o calle...',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () => _controller.centrarEnMiUbicacion(),
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.my_location,
-                color: Colors.red.shade400,
-                size: 22,
-              ),
-            ),
+          child: Icon(
+            Icons.my_location,
+            color: Colors.red.shade400,
+            size: 22,
           ),
-        ],
+        ),
       ),
     );
   }

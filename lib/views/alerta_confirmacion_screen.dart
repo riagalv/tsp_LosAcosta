@@ -129,9 +129,9 @@ class _AlertaConfirmacionViewState extends State<AlertaConfirmacionView>
               _buildMapaWidget(),
 
               const SizedBox(height: 16),
-              const Text(
-                'X PERSONAS ALERTADAS',
-                style: TextStyle(
+              Text(
+                '${_controller.personasAlertadas} VECINOS ALERTADOS',
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFFE84C3D),
