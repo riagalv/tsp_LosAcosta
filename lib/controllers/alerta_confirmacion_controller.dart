@@ -18,6 +18,7 @@ class AlertaConfirmacionController {
   String? ubicacionTexto;
   bool cargando = true;
   Position? posicion;
+  int personasAlertadas = 0;
 
   // Callbacks para actualizar la vista
   Function? onUbicacionActualizada;
@@ -42,6 +43,9 @@ class AlertaConfirmacionController {
         posicion.longitude,
       );
 
+      await OneSignalService.actualizarUbicacion(posicion.latitude, posicion.longitude);
+      personasAlertadas = await guardarAlerta(posicion, direccionLegible);
+
       ubicacionTexto = direccionLegible;
       this.posicion = posicion;
       cargando = false;
@@ -49,11 +53,6 @@ class AlertaConfirmacionController {
       if (onUbicacionActualizada != null) {
         onUbicacionActualizada!();
       }
-
-      await OneSignalService.actualizarUbicacion(posicion.latitude, posicion.longitude);
-
-      // Guardar alerta con dirección legible
-      await guardarAlerta(posicion, direccionLegible);
     } catch (e) {
       cargando = false;
       ubicacionTexto = e.toString();
@@ -127,13 +126,22 @@ class AlertaConfirmacionController {
     }
   }
 
-  // Guardar alerta con dirección legible
-  Future<void> guardarAlerta(Position posicion, String direccionLegible) async {
+  // Guardar alerta con dirección legible y notificar
+  Future<int> guardarAlerta(Position posicion, String direccionLegible) async {
     try {
       final prefs = _sharedPreferences ?? await SharedPreferences.getInstance();
       final nombre = prefs.getString('nombre') ?? '';
       final apellido = prefs.getString('apellido') ?? '';
       final emisor = '$nombre $apellido'.trim();
+
+      final oneSignalService = OneSignalService(firestore: _firestore);
+      final alertados = await oneSignalService.notificarUsuariosCercanos(
+        latitudAlerta: posicion.latitude,
+        longitudAlerta: posicion.longitude,
+        riesgo: nivelRiesgo,
+        direccion: direccionLegible,
+        emisor: emisor.isNotEmpty ? emisor : 'Anónimo',
+      );
 
       final alerta = AlertaModel(
         latitud: posicion.latitude,
@@ -142,22 +150,16 @@ class AlertaConfirmacionController {
         riesgo: nivelRiesgo,
         estado: 'activa',
         emisor: emisor.isNotEmpty ? emisor : 'Anónimo',
+        personasAlertadas: alertados,
       );
 
       await _firestore.collection('alertas').add(alerta.toMap());
-      debugPrint('Alerta guardada con dirección: $direccionLegible');
+      debugPrint('Alerta guardada con dirección: $direccionLegible y $alertados personas alertadas');
 
-      final oneSignalService = OneSignalService(firestore: _firestore);
-      await oneSignalService.notificarUsuariosCercanos(
-        latitudAlerta: posicion.latitude,
-        longitudAlerta: posicion.longitude,
-        riesgo: nivelRiesgo,
-        direccion: direccionLegible,
-        emisor: emisor.isNotEmpty ? emisor : 'Anónimo',
-      );
+      return alertados;
     } catch (e) {
       debugPrint('Error guardando alerta: $e');
-      rethrow;
+      return 0;
     }
   }
 }

@@ -244,8 +244,15 @@ class _RegistrarPuntoSeguroScreenState extends State<RegistrarPuntoSeguroScreen>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          Navigator.pop(context);
+        }
+      },
       child: Scaffold(
         backgroundColor: const Color(0xFFFAFAFA),
         appBar: AppBar(
@@ -255,7 +262,7 @@ class _RegistrarPuntoSeguroScreenState extends State<RegistrarPuntoSeguroScreen>
             icon: const Icon(Icons.arrow_back, color: Colors.black87),
             onPressed: () async {
               if (await _onWillPop()) {
-                if (mounted) Navigator.pop(context);
+                if (context.mounted) Navigator.pop(context);
               }
             },
           ),

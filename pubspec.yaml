@@ -33,6 +33,7 @@ dependencies:
   # PDF y Archivos
   path_provider: ^2.1.0
   open_filex: ^4.3.0
+  pdf: ^3.12.0
 
 
 

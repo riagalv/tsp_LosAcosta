@@ -293,12 +293,12 @@ class HistorialScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return DraggableScrollableSheet(
           initialChildSize: 0.65,
           minChildSize: 0.4,
           maxChildSize: 0.85,
-          builder: (context, scrollController) {
+          builder: (scrollContext, scrollController) {
             return Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
@@ -444,13 +444,65 @@ class HistorialScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'CERRAR',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: Colors.grey,
-                            letterSpacing: 1,
+                            color: colorRiesgo,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      // Información adicional
+                      _buildDetalleFila(
+                        icon: Icons.person_outline,
+                        titulo: 'EMISOR',
+                        contenido: alerta.emisor,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDetalleFila(
+                        icon: Icons.access_time,
+                        titulo: 'HORA',
+                        contenido:
+                            '${alerta.fecha?.hour.toString().padLeft(2, '0')}:${alerta.fecha?.minute.toString().padLeft(2, '0')} hrs',
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDetalleFila(
+                        icon: Icons.location_on_outlined,
+                        titulo: 'UBICACIÓN',
+                        contenido:
+                            '${alerta.latitud.toStringAsFixed(4)}, ${alerta.longitud.toStringAsFixed(4)}',
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDetalleFila(
+                        icon: Icons.notifications_active_outlined,
+                        titulo: 'VECINOS ALERTADOS',
+                        contenido: '${alerta.personasAlertadas} personas',
+                      ),
+                      const SizedBox(height: 24),
+                      // Botón cerrar
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1C2833),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'CERRAR',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                            ),
                           ),
                         ),
                       ),

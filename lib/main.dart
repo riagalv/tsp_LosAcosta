@@ -9,11 +9,32 @@ import 'views/login_screen.dart';
 import 'views/registrar_punto_seguro_screen.dart';
 import 'views/mapa_expandido_screen.dart';
 import 'services/onesignal_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<void> _limpiarAlertasAntiguas() async {
+  try {
+    final haceUnaSemana = DateTime.now().subtract(const Duration(days: 7));
+    final snapshot = await FirebaseFirestore.instance
+        .collection('alertas')
+        .where('fecha', isLessThan: Timestamp.fromDate(haceUnaSemana))
+        .get();
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+    debugPrint('Se eliminaron ${snapshot.docs.length} alertas antiguas.');
+  } catch (e) {
+    debugPrint('Error limpiando alertas antiguas: $e');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await OneSignalService.inicializar();
+
+  // Limpiar alertas que tengan más de una semana de antigüedad
+  _limpiarAlertasAntiguas();
 
   final prefs = await SharedPreferences.getInstance();
   final logueado = prefs.getBool('logueado') ?? false;
@@ -109,37 +130,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onLongPressStart() {
+  void _onBotonPanicoTap() async {
+    // Breve animación visual al presionar
     setState(() => _presionando = true);
+    await Future.delayed(const Duration(milliseconds: 150));
+    if (mounted) setState(() => _presionando = false);
 
-    Future.delayed(const Duration(seconds: 2), () {
-      if (_presionando && mounted) {
-        setState(() => _presionando = false);
+    if (_nivelSeleccionado < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selecciona un nivel de riesgo primero'),
+          backgroundColor: Colors.grey,
+        ),
+      );
+      return;
+    }
 
-        if (_nivelSeleccionado < 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Selecciona un nivel de riesgo primero'),
-              backgroundColor: Colors.grey,
-            ),
-          );
-          return;
-        }
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AlertaConfirmacionView(
-              nivelRiesgo: _niveles[_nivelSeleccionado]['label'] as String,
-            ),
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AlertaConfirmacionView(
+            nivelRiesgo: _niveles[_nivelSeleccionado]['label'] as String,
           ),
-        );
-      }
-    });
-  }
-
-  void _onLongPressEnd() {
-    setState(() => _presionando = false);
+        ),
+      );
+    }
   }
 
   @override
@@ -264,8 +280,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       animation: _auraAnimation,
                       builder: (context, child) {
                         return GestureDetector(
-                          onLongPressStart: (_) => _onLongPressStart(),
-                          onLongPressEnd: (_) => _onLongPressEnd(),
+                          onTap: _onBotonPanicoTap,
                           child: SizedBox(
                             width: 260,
                             height: 260,
@@ -355,12 +370,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                       const SizedBox(height: 8),
                                       const Text(
-                                        'MANTÉN\nPRESIONADO PARA\nALERTAR',
+                                        'TOCA PARA\nALERTAR',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w900,
-                                          fontSize: 14,
+                                          fontSize: 16,
                                           height: 1.3,
                                           letterSpacing: 0.5,
                                         ),
@@ -405,7 +420,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       color: Color(0xFFE84C3D),
                                     ),
                                   ),
-                                  TextSpan(text: ' y mantén presionado\nel '),
+                                  TextSpan(text: ' y toca el\n'),
                                   TextSpan(
                                     text: 'botón de pánico',
                                     style: TextStyle(
@@ -415,7 +430,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                   ),
                                   TextSpan(
                                     text:
-                                        ' por 2 segundos para enviar una\nalerta inmediata.',
+                                        ' para enviar una alerta inmediata.',
                                   ),
                                 ],
                               ),
