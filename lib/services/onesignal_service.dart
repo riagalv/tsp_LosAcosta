@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OneSignalService {
   static const String _appId = '4f924a27-f277-4028-b0af-b9cb284ddcf1';
   static const String _restApiKey =
-      'os_v2_app_j6jeuj7so5acrmfpxhfsqto46hpv6akuq5iefrei6quw2ouvbqffvnnpq6v2twcmziquvgh7ejoiygq557ez7bbnpuu6k75hcoyf2ci';
+      'os_v2_app_j6jeuj7so5acrmfpxhfsqto46frrbufox4auwrfbdiqiqk5peus5i5jzeduyrjgze6cttkbohmo3pu675xfnakexggvk4lkbezpxzvy';
+
   static const double _radioKm = 0.5;
   final FirebaseFirestore _firestore;
 
@@ -81,7 +82,7 @@ class OneSignalService {
       if (snapshot.docs.isEmpty) return 0;
       final List<String> idsCercanos = [];
       final String? miOneSignalId = OneSignal.User.pushSubscription.id;
-      
+
       for (final doc in snapshot.docs) {
         final data = doc.data();
         final ubicacion = data['ubicacion'] as Map<String, dynamic>?;
@@ -89,9 +90,10 @@ class OneSignalService {
         final oneSignalId = data['oneSignalId'] as String?;
         if (ubicacion == null || oneSignalId == null) continue;
         if (oneSignalId == miOneSignalId) continue; // No notificar al emisor
-        
+
         if (ultimaUbicacion != null) {
-          if (DateTime.now().difference(ultimaUbicacion.toDate()).inHours > 24) {
+          if (DateTime.now().difference(ultimaUbicacion.toDate()).inHours >
+              24) {
             continue;
           }
         }
