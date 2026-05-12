@@ -8,6 +8,7 @@ import 'views/alerta_confirmacion_screen.dart';
 import 'views/login_screen.dart';
 import 'views/registrar_punto_seguro_screen.dart';
 import 'views/mapa_expandido_screen.dart';
+import 'views/catalogo_perros_screen.dart';
 import 'services/onesignal_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -489,6 +490,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => HistorialScreen()),
+                      );
+                    }),
+                    _buildNavItem(Icons.pets, 'Perros', () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CatalogoPerrosScreen()),
                       );
                     }),
                   ],
