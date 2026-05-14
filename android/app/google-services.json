@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125781436437",
+    "project_id": "alertacanbd",
+    "storage_bucket": "alertacanbd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125781436437:android:1838ba949a1814f558061c",
+        "android_client_info": {
+          "package_name": "com.example.alertacan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ0WdsoiLD07BHk7k1SkkypJeKyBxzUX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
